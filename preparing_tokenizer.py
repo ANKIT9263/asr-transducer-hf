@@ -1,31 +1,14 @@
 import os
-import requests
+import subprocess
 from omegaconf import OmegaConf
-import yaml
-import sys
 
-# ---------- Utility to download files ----------
-def download_file(url, save_path):
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
-    response = requests.get(url)
-    response.raise_for_status()
-    with open(save_path, 'wb') as f:
-        f.write(response.content)
-
-# ---------- Step 1: Download scripts ----------
+# Download get_hf_text_data.py if not exists
 if not os.path.exists("scripts/get_hf_text_data.py"):
-    download_file(
-        "https://raw.githubusercontent.com/NVIDIA/NeMo/main/scripts/tokenizers/get_hf_text_data.py",
-        "scripts/get_hf_text_data.py"
-    )
+    os.makedirs("scripts", exist_ok=True)
+    subprocess.run(["wget", "-P", "scripts/",
+        "https://raw.githubusercontent.com/NVIDIA/NeMo/main/scripts/tokenizers/get_hf_text_data.py"])
 
-if not os.path.exists('configs/huggingface_data_tokenizer.yaml'):
-    download_file(
-        "https://raw.githubusercontent.com/NVIDIA/NeMo/main/scripts/tokenizers/conf/huggingface_data_tokenizer.yaml",
-        "configs/huggingface_data_tokenizer.yaml"
-    )
-
-# ---------- Step 2: Create train split config ----------
+# Create config dictionary
 train_split = {
     'path': 'google/fleurs',
     'name': 'te_in',
@@ -34,13 +17,21 @@ train_split = {
 }
 print(OmegaConf.to_yaml(train_split))
 
+# Download tokenizer config YAML
+if not os.path.exists('configs/huggingface_data_tokenizer.yaml'):
+    os.makedirs("configs", exist_ok=True)
+    subprocess.run(["wget", "-P", "configs/",
+        "https://raw.githubusercontent.com/NVIDIA/NeMo/main/scripts/tokenizers/conf/huggingface_data_tokenizer.yaml"])
+
+# Write train_split config to temporary YAML file
+import yaml
 split_yaml = "split_config.yaml"
 with open(split_yaml, "w") as f:
     yaml.dump([train_split], f)
 
-# ---------- Step 3: Run get_hf_text_data.py ----------
-sys.argv = [
-    "get_hf_text_data.py",
+# Run data extraction script
+subprocess.run([
+    "python", "scripts/get_hf_text_data.py",
     "--config-path=../configs",
     "--config-name=huggingface_data_tokenizer",
     "normalize_text=True",
@@ -48,35 +39,35 @@ sys.argv = [
     "text_key=transcription",
     "output_file=telugu_train_corpus.txt",
     f"+hf_data_cfg=@{split_yaml}"
-]
-exec(open("scripts/get_hf_text_data.py").read())
+])
 
-# ---------- Step 4: Preview the output ----------
+# Preview first 5 lines
 print("\nPreview of telugu_train_corpus.txt:")
 with open('telugu_train_corpus.txt', 'r') as f:
     for _ in range(5):
         print(f.readline().strip())
 
-# ---------- Step 5: Download tokenizer script ----------
+# Download tokenizer script if not exists
 if not os.path.exists("scripts/process_asr_text_tokenizer.py"):
-    download_file(
-        "https://raw.githubusercontent.com/NVIDIA/NeMo/main/scripts/tokenizers/process_asr_text_tokenizer.py",
-        "scripts/process_asr_text_tokenizer.py"
-    )
+    branch = "main"
+    subprocess.run([
+        "wget", "-P", "scripts/",
+        f"https://raw.githubusercontent.com/NVIDIA/NeMo/{branch}/scripts/tokenizers/process_asr_text_tokenizer.py"
+    ])
 
-# ---------- Step 6: Setup Tokenizer ----------
+# Setup tokenizer variables
 VOCAB_SIZE = 256
 TOKENIZER_TYPE = "spe"
 SPE_TYPE = "bpe"
 
+# Clean and prepare tokenizer directory
 if os.path.exists("tokenizers"):
-    import shutil
-    shutil.rmtree("tokenizers")
+    subprocess.run(["rm", "-r", "tokenizers"])
 os.makedirs("tokenizers", exist_ok=True)
 
-# ---------- Step 7: Run tokenizer script ----------
-sys.argv = [
-    "process_asr_text_tokenizer.py",
+# Run tokenizer training script
+subprocess.run([
+    "python", "scripts/process_asr_text_tokenizer.py",
     "--data_file=telugu_train_corpus.txt",
     "--data_root=tokenizers",
     f"--tokenizer={TOKENIZER_TYPE}",
@@ -84,10 +75,9 @@ sys.argv = [
     "--no_lower_case",
     "--log",
     f"--vocab_size={VOCAB_SIZE}"
-]
-exec(open("scripts/process_asr_text_tokenizer.py").read())
+])
 
-# ---------- Step 8: Locate Tokenizer ----------
+# Determine tokenizer path
 if TOKENIZER_TYPE == 'spe':
     TOKENIZER = os.path.join("tokenizers", f"tokenizer_spe_{SPE_TYPE}_v{VOCAB_SIZE}")
     TOKENIZER_TYPE_CFG = "bpe"
