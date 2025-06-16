@@ -38,7 +38,7 @@ subprocess.run([
     'symbols_to_keep=["."]',
     "text_key=transcription",
     "output_file=telugu_train_corpus.txt",
-    f"+hf_data_cfg=@{split_yaml}"
+    f"++hf_data_cfg=@{split_yaml}"
 ])
 
 # Preview first 5 lines
