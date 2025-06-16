@@ -4,7 +4,7 @@ from omegaconf import OmegaConf
 from nemo.collections.asr.models import ASRModel
 from nemo.utils import model_utils
 from lightning.pytorch import Trainer
-
+import nemo.collections.asr as nemo_asr
 # -------------------- Load Config --------------------
 config_path = "configs/updated_speech_to_text_hf_finetune.yaml"
 config = OmegaConf.load(config_path)
@@ -26,8 +26,8 @@ if "spec_augment" in config.model:
     print("❌ Removed spec_augment from config")
 
 # -------------------- Load Pretrained Model --------------------
-print("📦 Loading pre-trained model: nvidia/parakeet-rnnt-0.6b")
-asr_model = ASRModel.from_pretrained(model_name="nvidia/parakeet-rnnt-0.6b")
+print("📦 Loading pre-trained model: nvidia/parakeet-tdt-0.6b-v2")
+asr_model = nemo_asr.models.ASRModel.from_pretrained(model_name="nvidia/parakeet-tdt-0.6b-v2")
 
 # -------------------- Update Tokenizer --------------------
 TOKENIZER_TYPE = "spe"
