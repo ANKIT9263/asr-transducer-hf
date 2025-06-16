@@ -1,0 +1,4 @@
+name: te_in
+path: google/fleurs
+split: train
+streaming: false
