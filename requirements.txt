@@ -1,4 +1,5 @@
 wget
+wheel
 text-unidecode
 numpy==1.24.4
 datasets==2.19.0
