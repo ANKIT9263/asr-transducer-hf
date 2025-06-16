@@ -3,7 +3,4 @@ wheel
 text-unidecode
 numpy==1.24.4
 datasets==2.19.0
-sox
-libsndfile1
-ffmpeg
 git+https://github.com/NVIDIA/NeMo.git@main#egg=nemo_toolkit[all]
