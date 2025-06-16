@@ -10,7 +10,7 @@ symbols_to_keep: ["'"]  # a list of symbols to keep during text cleaning.
 text_key:  "text"  # the key for groundtruth transcription, e.g., MCV usually uses "sentence" while some others use "text"
 num_proc: 4  # num processes to use for downloading HF datasets
 
-data_path: google/fleurs"
+data_path: google/fleurs
 data_name: te_in
 streaming: false
 
