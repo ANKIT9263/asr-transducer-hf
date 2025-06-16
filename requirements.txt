@@ -1,0 +1,14 @@
+wget
+text-unidecode
+matplotlib>=3.3.2
+numpy==1.24.4
+datasets==2.19.0
+sox
+libsndfile1
+ffmpeg
+git+https://github.com/NVIDIA/NeMo.git@main#egg=nemo_toolkit[all]
+
+
+sox
+libsndfile1
+ffmpeg
