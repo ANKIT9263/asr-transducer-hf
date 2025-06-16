@@ -25,9 +25,11 @@ if not os.path.exists('configs/huggingface_data_tokenizer.yaml'):
 
 # Write train_split config to temporary YAML file
 import yaml
+# Write train_split config to temporary YAML file (as a dict, not a list)
 split_yaml = "split_config.yaml"
 with open(split_yaml, "w") as f:
-    yaml.dump([train_split], f)
+    yaml.dump(train_split, f)
+
 
 # Run data extraction script
 subprocess.run([
@@ -38,7 +40,7 @@ subprocess.run([
     'symbols_to_keep=["."]',
     "text_key=transcription",
     "output_file=telugu_train_corpus.txt",
-    f"++hf_data_cfg=@{split_yaml}"
+    f"+hf_data_cfg=@{split_yaml}"  # use + not ++ for a nested dict
 ])
 
 # Preview first 5 lines
