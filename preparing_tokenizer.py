@@ -10,7 +10,7 @@ subprocess.run([
     "normalize_text=True",
     'symbols_to_keep=["."]',
     "text_key=transcription",
-    "output_file=telugu_train_corpus.txt",
+    "output_file=telugu_train_corpus.txt"
 ])
 
 # Preview first 5 lines
