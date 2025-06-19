@@ -9,6 +9,11 @@ import nemo.collections.asr as nemo_asr
 config_path = "configs/updated_speech_to_text_hf_finetune.yaml"
 config = OmegaConf.load(config_path)
 
+import os
+os.environ["NUMBA_CUDA_DEFAULT_PTX_CC"] = "8.4"
+os.environ["CUDA_ENABLE_PYNVJITLINK"] = "0"
+
+
 # -------------------- Optimizer & Scheduler --------------------
 config.model.optim.name = "adamw"
 config.model.optim.lr = 3e-4
