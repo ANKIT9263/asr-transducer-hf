@@ -30,4 +30,4 @@ pip install scikit-learn==1.2.2
 echo "🧠 Installing NVIDIA NeMo v1.23.0..."
 pip install git+https://github.com/NVIDIA/NeMo.git@v1.23.0#egg=nemo_toolkit[all]
 
-echo "✅ Setup complete."
+echo "✅ Setup completed."
