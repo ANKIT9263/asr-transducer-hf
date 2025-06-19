@@ -1,4 +1,8 @@
 import os
+
+os.environ["NUMBA_CUDA_DEFAULT_PTX_CC"] = "8.4"
+os.environ["CUDA_ENABLE_PYNVJITLINK"] = "0"
+
 import torch
 from omegaconf import OmegaConf
 from nemo.collections.asr.models import ASRModel
@@ -8,11 +12,6 @@ import nemo.collections.asr as nemo_asr
 # -------------------- Load Config --------------------
 config_path = "configs/updated_speech_to_text_hf_finetune.yaml"
 config = OmegaConf.load(config_path)
-
-import os
-os.environ["NUMBA_CUDA_DEFAULT_PTX_CC"] = "8.4"
-os.environ["CUDA_ENABLE_PYNVJITLINK"] = "0"
-
 
 # -------------------- Optimizer & Scheduler --------------------
 config.model.optim.name = "adamw"
