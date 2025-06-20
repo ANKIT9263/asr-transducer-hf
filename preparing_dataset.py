@@ -25,7 +25,7 @@ print(f"Test size      : {len(dataset_splits['test'])}")
 # -------------------- Step 4: Push to Hugging Face Hub --------------------
 # Set your Hugging Face dataset repo name here
 HF_USERNAME = "Ankit9263"  # <-- CHANGE THIS
-HF_DATASET_ID = "medical-asr-en-split"
+HF_DATASET_ID = "medical-asr-split"
 
 # Login using: huggingface-cli login
 print(f"Pushing to Hugging Face Hub: {HF_USERNAME}/{HF_DATASET_ID}")
