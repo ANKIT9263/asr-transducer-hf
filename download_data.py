@@ -1,7 +1,7 @@
 from datasets import load_dataset
 
 # Load one sample from the validation split
-sample = load_dataset('google/fleurs', 'te_in', split='validation')[0]
+sample = load_dataset('Ankit9263/medical-asr-en-split', split='validation')[0]
 
 # View all available fields
 print(sample.keys())
