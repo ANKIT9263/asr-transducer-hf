@@ -1,29 +1,37 @@
-import datasets
-import soundfile as sf
-import tempfile
+from datasets import load_dataset, DatasetDict
 import os
 
-# Load a sample from the validation split
-sample = datasets.load_dataset('google/fleurs', 'te_in', split='validation')[0]
+# -------------------- Step 1: Load dataset --------------------
+print("Loading dataset...")
+dataset = load_dataset("jarvisx17/Medical-ASR-EN", split="train")
 
-# Save the audio array to a temporary .wav file
-audio_array = sample['audio']['array']
-sample_rate = sample['audio']['sampling_rate']  # should be 16000
+# -------------------- Step 2: Shuffle and Split --------------------
+print("Shuffling and splitting dataset...")
+dataset = dataset.shuffle(seed=42)
+train_testvalid = dataset.train_test_split(test_size=0.2, seed=42)
+test_valid = train_testvalid['test'].train_test_split(test_size=0.5, seed=42)
 
-with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
-    sf.write(tmpfile.name, audio_array, sample_rate)
-    audio_path = tmpfile.name
+dataset_splits = DatasetDict({
+    'train': train_testvalid['train'],
+    'validation': test_valid['train'],
+    'test': test_valid['test']
+})
 
-print("✅ Audio sample saved at:", audio_path)
-print("📝 Transcription:", sample['transcription'])
+# -------------------- Step 3: Preview Split Counts --------------------
+print(f"Train size     : {len(dataset_splits['train'])}")
+print(f"Validation size: {len(dataset_splits['validation'])}")
+print(f"Test size      : {len(dataset_splits['test'])}")
 
-# Optional: play audio on supported platforms
-try:
-    import simpleaudio as sa
-    wave_obj = sa.WaveObject.from_wave_file(audio_path)
-    play_obj = wave_obj.play()
-    play_obj.wait_done()
-except ImportError:
-    print("🔇 Install `simpleaudio` to enable playback (pip install simpleaudio)")
-except Exception as e:
-    print("⚠️ Error playing audio:", str(e))
+# -------------------- Step 4: Push to Hugging Face Hub --------------------
+# Set your Hugging Face dataset repo name here
+HF_USERNAME = "Ankit9263"  # <-- CHANGE THIS
+HF_DATASET_ID = "medical-asr-en-split"
+
+# Login using: huggingface-cli login
+print(f"Pushing to Hugging Face Hub: {HF_USERNAME}/{HF_DATASET_ID}")
+dataset_splits.push_to_hub(f"{HF_USERNAME}/{HF_DATASET_ID}")
+
+print("✅ Dataset uploaded successfully.")
+
+if __name__ == '__main__':
+    pass

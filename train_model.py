@@ -1,7 +1,4 @@
 import os
-# os.environ["NUMBA_CUDA_DEFAULT_PTX_CC"] = "8.4"
-# os.environ["CUDA_ENABLE_PYNVJITLINK"] = "0"
-# os.environ["NUMBA_CACHE_DIR"] = "/tmp/numba_cache"
 
 import torch
 from omegaconf import OmegaConf
